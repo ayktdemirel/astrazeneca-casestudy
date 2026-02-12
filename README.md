@@ -89,7 +89,7 @@ docker compose exec notification-service python -m pytest
 See [API.md](API.md) for full endpoint details.
 
 ## Assumptions & Design Decisions
-To bridge the gap between the case study requirements and this prototype implementation, the following assumptions were made:
+To bridge the gap between the case study requirements and this prototype implementation, the following assumptions/implementations were made:
 
 1.  **Data Sources**:
     -   **ClinicalTrials.gov**: The `Crawler Service` fetches live data from the ClinicalTrials.gov API.
