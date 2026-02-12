@@ -65,7 +65,11 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
 ## Seeding Data (Optional)
 To populate the database with dummy competitors, users, and crawl jobs:
 1. Ensure all services are running (`docker compose up`).
-2. Run the seed script:
+2. Install dependencies:
+   ```bash
+   pip install httpx
+   ```
+3. Run the seed script:
    ```bash
    python3 scripts/seed_data.py
    ```

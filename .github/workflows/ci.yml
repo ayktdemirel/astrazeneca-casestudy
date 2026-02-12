@@ -45,20 +45,20 @@ jobs:
     - name: Run Competitor Service Tests
       env:
         DATABASE_URL: postgresql+asyncpg://user:password@localhost:5432/connected_insights
-        PYTHONPATH: ${{ github.workspace }}
+        PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/services/competitor
       run: |
         pytest services/competitor/tests
         
     - name: Run Insights Service Tests
       env:
         DATABASE_URL: postgresql+asyncpg://user:password@localhost:5432/connected_insights
-        PYTHONPATH: ${{ github.workspace }}
+        PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/services/insights
       run: |
         pytest services/insights/tests
 
     - name: Run Notification Service Tests
       env:
         DATABASE_URL: postgresql+asyncpg://user:password@localhost:5432/connected_insights
-        PYTHONPATH: ${{ github.workspace }}
+        PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/services/notification
       run: |
         pytest services/notification/tests
