@@ -62,6 +62,15 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
    - Dashboard: [http://localhost](http://localhost)
    - Graylog (Logs): [http://localhost:9000](http://localhost:9000) (admin/admin)
 
+## Seeding Data (Optional)
+To populate the database with dummy competitors, users, and crawl jobs:
+1. Ensure all services are running (`docker compose up`).
+2. Run the seed script:
+   ```bash
+   python3 scripts/seed_data.py
+   ```
+   **Note**: This script uses the default `admin@astrazeneca.com` / `password123` credentials to authenticate.
+
 ## Testing
 Run unit tests for core services:
 ```bash
