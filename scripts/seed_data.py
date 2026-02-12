@@ -50,17 +50,29 @@ COMPETITORS = [
 
 JOBS = [
     {
-        "source": "ClinicalTrials.gov",
+        "source": "ClinicalTrials",
+        "query": "Latest Studies",
+        "schedule": "0 */12 * * *",
+        "enabled": True
+    },
+    {
+        "source": "ClinicalTrials",
         "query": "Oncology",
         "schedule": "0 */12 * * *",
         "enabled": True
     },
     {
-        "source": "ClinicalTrials.gov",
+        "source": "ClinicalTrials",
         "query": "Cardiovascular",
         "schedule": "0 */12 * * *",
         "enabled": True
-    }
+    },
+    {
+        "source": "ResearchNews",
+        "query": "General",
+        "schedule": "0 */12 * * *",
+        "enabled": True
+    }   
 ]
 
 logging.basicConfig(level=logging.INFO)
@@ -160,7 +172,7 @@ async def seed():
                     logger.info("Subscription for Oncology and Roche already exists.")
                 else:
                     sub_payload = {
-                        "therapeuticAreas": ["Oncology"],
+                        "therapeuticAreas": ["Oncology", "General", "Cardiovascular"],
                         "competitorIds": [roche_id],
                         "channels": ["console", "email"]
                     }
