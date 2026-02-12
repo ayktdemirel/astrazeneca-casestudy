@@ -87,3 +87,19 @@ docker compose exec notification-service python -m pytest
 
 ## API Documentation
 See [API.md](API.md) for full endpoint details.
+
+## Assumptions & Design Decisions
+To bridge the gap between the case study requirements and this prototype implementation, the following assumptions were made:
+
+1.  **Data Sources**:
+    -   **ClinicalTrials.gov**: The `Crawler Service` fetches live data from the ClinicalTrials.gov API.
+    -   **News Sources**: For demonstration purposes, news data is fetched from RSS feeds.
+2.  **Intelligence Engine**:
+    -   The system uses **OpenAI (GPT-4)** to analyze unstructured text (trials/news) and generate insights. In a production setting, this could be replaced or augmented with a fine-tuned local LLM (e.g., Llama 3) for cost efficiency and data privacy.
+3.  **Notifications**:
+    -   Email notifications are logged to the **console** and stored in the database. A real SMTP server (Check `libs/shared/src/email.py`) is not configured for this demo environment.
+4.  **Deployment**:
+    -   The system is orchestrated using **Docker Compose** for ease of local development. A production deployment would utilize **Kubernetes (K8s)** for scalability and resilience.
+5.  **Security**:
+    -   **Authentication**: Uses a simplified JWT implementation.
+    -   **Secrets**: Managed via environment variables (`.env`). In production, a secret manager (AWS Secrets Manager, HashiCorp Vault) would be required.
