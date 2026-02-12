@@ -1,0 +1,67 @@
+<div class="max-w-6xl mx-auto">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <mat-card *ngFor="let stat of stats" class="p-4 flex items-center shadow-md hover:shadow-lg transition-shadow">
+            <div [class]="'p-3 rounded-full mr-4 ' + stat.bg">
+                <mat-icon [class]="stat.color">{{ stat.icon }}</mat-icon>
+            </div>
+            <div>
+                <p class="text-gray-500 text-sm font-medium">{{ stat.label }}</p>
+                <h3 class="text-2xl font-bold text-gray-800">{{ stat.value }}</h3>
+            </div>
+        </mat-card>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Recent Insights -->
+        <mat-card class="col-span-2 shadow-md">
+            <mat-card-header class="border-b border-gray-100 pb-2 mb-4">
+                <mat-card-title class="text-lg font-bold text-gray-800">Recent Insights</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div *ngIf="loading" class="p-4 text-center text-gray-400">Loading...</div>
+                <div *ngIf="!loading && recentInsights.length === 0" class="p-4 text-center text-gray-400">
+                    No insights yet. Run a crawl job to generate data.
+                </div>
+                <div class="space-y-3">
+                    <div *ngFor="let insight of recentInsights"
+                        class="flex items-start p-3 hover:bg-gray-50 rounded-lg cursor-pointer border border-gray-100 transition-colors"
+                        (click)="openInsight(insight)">
+                        <div class="flex-1 min-w-0 mr-3">
+                            <h4 class="font-semibold text-indigo-900 truncate">{{ insight.title }}</h4>
+                            <p class="text-xs text-gray-500 mt-1">
+                                {{ insight.therapeuticArea }}
+                                <span *ngIf="insight.createdAt"> · {{ insight.createdAt | date:'short' }}</span>
+                            </p>
+                        </div>
+                        <span
+                            [class]="'text-xs font-semibold px-2 py-1 rounded whitespace-nowrap ' + getImpactColor(insight)">
+                            {{ getImpactLabel(insight) }}
+                        </span>
+                    </div>
+                </div>
+            </mat-card-content>
+            <mat-card-actions align="end">
+                <button mat-button color="primary" (click)="navigateTo('/insights')">View All Insights</button>
+            </mat-card-actions>
+        </mat-card>
+
+        <!-- Quick Actions -->
+        <mat-card class="shadow-md">
+            <mat-card-header class="border-b border-gray-100 pb-2 mb-4">
+                <mat-card-title class="text-lg font-bold text-gray-800">Quick Actions</mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="flex flex-col gap-3">
+                <button mat-flat-button color="primary" class="w-full" (click)="navigateTo('/competitors')">
+                    <mat-icon class="mr-2">business</mat-icon> View Competitors
+                </button>
+                <button mat-stroked-button color="primary" class="w-full" (click)="navigateTo('/crawler')">
+                    <mat-icon class="mr-2">search</mat-icon> Manage Crawler
+                </button>
+                <button mat-stroked-button color="accent" class="w-full" (click)="navigateTo('/notifications')">
+                    <mat-icon class="mr-2">notifications</mat-icon> View Notifications
+                </button>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

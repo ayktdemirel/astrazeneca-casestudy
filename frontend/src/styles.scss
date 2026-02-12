@@ -1,0 +1,37 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@include mat.core();
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Fix Material Dialog centering - prevent sidebar from pushing the overlay */
+.cdk-overlay-container {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+}
+
+.cdk-overlay-pane {
+    max-width: 90vw !important;
+}
+
+.cdk-global-overlay-wrapper {
+    justify-content: center !important;
+    align-items: flex-start !important;
+}

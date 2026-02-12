@@ -1,0 +1,77 @@
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Users</h2>
+    </div>
+
+    <mat-card class="overflow-hidden">
+        <table mat-table [dataSource]="dataSource" class="w-full">
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef> Email </th>
+                <td mat-cell *matCellDef="let element">
+                    <span class="font-medium text-gray-900">{{element.email}}</span>
+                </td>
+            </ng-container>
+
+            <!-- Role Column -->
+            <ng-container matColumnDef="role">
+                <th mat-header-cell *matHeaderCellDef> Role </th>
+                <td mat-cell *matCellDef="let element">
+                    <span class="px-2 py-1 text-xs font-semibold rounded"
+                        [ngClass]="{'bg-purple-100 text-purple-800': element.role === 'ADMIN', 'bg-gray-100 text-gray-800': element.role !== 'ADMIN'}">
+                        {{element.role}}
+                    </span>
+                </td>
+            </ng-container>
+
+            <!-- Subscription Status Column -->
+            <ng-container matColumnDef="subscription_status">
+                <th mat-header-cell *matHeaderCellDef> Preferences </th>
+                <td mat-cell *matCellDef="let element">
+                    <div class="flex flex-wrap gap-1 py-1" *ngIf="element.subscription; else noSub">
+                        <mat-chip-set>
+                            <mat-chip *ngFor="let area of element.subscription.therapeuticAreas" class="text-xs">
+                                {{area}}
+                            </mat-chip>
+                            <mat-chip *ngFor="let compId of element.subscription.competitorIds" class="text-xs"
+                                color="accent" selected>
+                                Comp: {{compId}}
+                            </mat-chip>
+                        </mat-chip-set>
+                        <span
+                            *ngIf="element.subscription.therapeuticAreas.length === 0 && element.subscription.competitorIds.length === 0"
+                            class="text-gray-400 text-xs italic">
+                            No specific filters
+                        </span>
+                    </div>
+                    <ng-template #noSub>
+                        <span class="text-gray-400 text-sm">None</span>
+                    </ng-template>
+                </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> </th>
+                <td mat-cell *matCellDef="let element">
+                    <div class="flex items-center gap-2 py-2">
+                        <button mat-stroked-button color="primary" (click)="openSubscriptionDialog(element)">
+                            <mat-icon class="mr-1">notifications</mat-icon> Subscribe
+                        </button>
+                        <button mat-stroked-button color="warn" (click)="deleteUser(element)" *ngIf="isAdmin">
+                            <mat-icon class="mr-1">delete</mat-icon> Delete
+                        </button>
+                    </div>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <div *ngIf="loading" class="p-8 text-center text-gray-500">
+            Loading...
+        </div>
+    </mat-card>
+</div>

@@ -1,0 +1,112 @@
+<div class="max-w-6xl mx-auto">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Crawler Management</h2>
+
+    <mat-tab-group animationDuration="0ms">
+
+        <!-- Jobs Tab -->
+        <mat-tab label="Crawl Jobs">
+            <div class="p-6 bg-white rounded-b-lg shadow-sm border-x border-b border-gray-200">
+                <div class="flex justify-end mb-4">
+                    <button mat-raised-button color="primary" (click)="openAddJobDialog()">
+                        <mat-icon>add</mat-icon> New Job
+                    </button>
+                </div>
+
+                <div *ngIf="jobs.length === 0" class="p-8 text-center text-gray-500">
+                    No crawl jobs found. Create one to start ingesting data.
+                </div>
+
+                <table *ngIf="jobs.length > 0" mat-table [dataSource]="jobs" class="w-full border border-gray-200">
+                    <ng-container matColumnDef="source">
+                        <th mat-header-cell *matHeaderCellDef> Source </th>
+                        <td mat-cell *matCellDef="let element">
+                            <span class="px-2 py-1 rounded text-xs font-semibold"
+                                [ngClass]="element.source === 'ClinicalTrials' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'">
+                                {{element.source}}
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="query">
+                        <th mat-header-cell *matHeaderCellDef> Query </th>
+                        <td mat-cell *matCellDef="let element"> {{element.query}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="schedule">
+                        <th mat-header-cell *matHeaderCellDef> Schedule </th>
+                        <td mat-cell *matCellDef="let element" class="text-sm text-gray-500"> {{element.schedule ||
+                            'Manual'}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef> Status </th>
+                        <td mat-cell *matCellDef="let element">
+                            <span [class]="element.enabled ? 'text-green-600 font-medium' : 'text-red-600'">
+                                {{element.enabled ? 'Active' : 'Disabled'}}
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef> Actions </th>
+                        <td mat-cell *matCellDef="let element">
+                            <button mat-icon-button color="primary" (click)="runJob(element)" matTooltip="Run Now">
+                                <mat-icon>play_arrow</mat-icon>
+                            </button>
+                            <button mat-icon-button (click)="editJob(element)" matTooltip="Edit">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" (click)="deleteJob(element)" matTooltip="Delete">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="jobColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: jobColumns;"></tr>
+                </table>
+            </div>
+        </mat-tab>
+
+        <!-- Documents Tab -->
+        <mat-tab label="Ingested Documents">
+            <div class="p-6 bg-white rounded-b-lg shadow-sm border-x border-b border-gray-200">
+
+                <div *ngIf="documents.length === 0" class="p-8 text-center text-gray-500">
+                    No documents ingested yet. Create a crawl job and run it.
+                </div>
+
+                <table *ngIf="documents.length > 0" mat-table [dataSource]="documents"
+                    class="w-full border border-gray-200">
+                    <ng-container matColumnDef="title">
+                        <th mat-header-cell *matHeaderCellDef> Title </th>
+                        <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="source">
+                        <th mat-header-cell *matHeaderCellDef> Source </th>
+                        <td mat-cell *matCellDef="let element"> {{element.source}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="processed">
+                        <th mat-header-cell *matHeaderCellDef> Processed </th>
+                        <td mat-cell *matCellDef="let element">
+                            <mat-icon [class]="element.processed ? 'text-green-600' : 'text-orange-400'">
+                                {{element.processed ? 'check_circle' : 'pending'}}
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="date">
+                        <th mat-header-cell *matHeaderCellDef> Date </th>
+                        <td mat-cell *matCellDef="let element"> {{element.ingestedAt | date:'medium'}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="docColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: docColumns;"></tr>
+                </table>
+            </div>
+        </mat-tab>
+
+    </mat-tab-group>
+</div>

@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit' : 'Add' }} Competitor</h2>
+<mat-dialog-content [formGroup]="form">
+    <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="Competitor Name">
+        <mat-error *ngIf="form.get('name')?.hasError('required')">Name is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Headquarters</mat-label>
+        <input matInput formControlName="headquarters" placeholder="Headquarters Location">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Therapeutic Areas</mat-label>
+        <mat-chip-grid #chipGrid aria-label="Enter therapeutic areas">
+            <mat-chip-row *ngFor="let area of therapeuticAreas" (removed)="removeArea(area)">
+                {{area}}
+                <button matChipRemove [attr.aria-label]="'remove ' + area">
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-chip-row>
+            <input placeholder="New area..." [matChipInputFor]="chipGrid"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addArea($event)" />
+        </mat-chip-grid>
+    </mat-form-field>
+
+    <div class="flex gap-4">
+        <mat-form-field appearance="outline" class="w-1/2">
+            <mat-label>Active Drugs</mat-label>
+            <input matInput type="number" formControlName="activeDrugs">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-1/2">
+            <mat-label>Pipeline Drugs</mat-label>
+            <input matInput type="number" formControlName="pipelineDrugs">
+        </mat-form-field>
+    </div>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid">Save</button>
+</mat-dialog-actions>

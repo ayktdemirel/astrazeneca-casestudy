@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: connected_insights
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest httpx sqlalchemy asyncpg pydantic fastapi
+        # Install service dependencies (simplified for CI)
+        pip install -r services/competitor/requirements.txt
+        pip install -r services/insights/requirements.txt
+        pip install -r services/notification/requirements.txt
+        
+    - name: Run Competitor Service Tests
+      env:
+        DATABASE_URL: postgresql+asyncpg://user:password@localhost:5432/connected_insights
+        PYTHONPATH: ${{ github.workspace }}
+      run: |
+        pytest services/competitor/tests
+        
+    - name: Run Insights Service Tests
+      env:
+        DATABASE_URL: postgresql+asyncpg://user:password@localhost:5432/connected_insights
+        PYTHONPATH: ${{ github.workspace }}
+      run: |
+        pytest services/insights/tests
+
+    - name: Run Notification Service Tests
+      env:
+        DATABASE_URL: postgresql+asyncpg://user:password@localhost:5432/connected_insights
+        PYTHONPATH: ${{ github.workspace }}
+      run: |
+        pytest services/notification/tests

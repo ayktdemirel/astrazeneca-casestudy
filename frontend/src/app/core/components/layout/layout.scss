@@ -1,0 +1,11 @@
+:host ::ng-deep {
+    .mat-badge-content {
+        top: 12px !important;
+        right: 8px !important;
+        left: auto !important;
+        font-size: 10px;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+    }
+}

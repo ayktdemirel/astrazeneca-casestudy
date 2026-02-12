@@ -1,0 +1,186 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    restart: always
+
+  competitor-service:
+    build:
+      context: ./services/competitor
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@postgres:5432/connected_insights
+      - SERVICE_NAME=competitor-service
+      - JWT_SECRET=68763CE06A184944B197FB8CA8CC3C8A
+    depends_on:
+      - postgres
+    volumes:
+      - ./libs:/app/libs
+      - ./services/competitor/src:/app/src
+      - ./services/competitor/tests:/app/tests
+
+  insights-service:
+    build:
+      context: ./services/insights
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@postgres:5432/connected_insights
+      - SERVICE_NAME=insights-service
+      - JWT_SECRET=68763CE06A184944B197FB8CA8CC3C8A
+    depends_on:
+      - postgres
+    volumes:
+      - ./libs:/app/libs
+      - ./services/insights/src:/app/src
+      - ./services/insights/tests:/app/tests
+
+  notification-service:
+    build:
+      context: ./services/notification
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@postgres:5432/connected_insights
+      - SERVICE_NAME=notification-service
+      - JWT_SECRET=68763CE06A184944B197FB8CA8CC3C8A
+    depends_on:
+      - postgres
+    volumes:
+      - ./libs:/app/libs
+      - ./services/notification/src:/app/src
+      - ./services/notification/tests:/app/tests
+
+  user-management-service:
+    build:
+      context: ./services/user-management
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@postgres:5432/connected_insights
+      - SERVICE_NAME=user-management-service
+      - JWT_SECRET=68763CE06A184944B197FB8CA8CC3C8A
+    depends_on:
+      - postgres
+    volumes:
+      - ./libs:/app/libs
+      - ./services/user-management/src:/app/src
+      - ./services/user-management/tests:/app/tests
+
+  crawler-service:
+    build:
+      context: ./services/crawler
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@postgres:5432/connected_insights
+      - SERVICE_NAME=crawler-service
+      - JWT_SECRET=68763CE06A184944B197FB8CA8CC3C8A
+    depends_on:
+      - postgres
+    volumes:
+      - ./libs:/app/libs
+      - ./libs:/app/libs
+      - ./services/crawler/src:/app/src
+      - ./services/crawler/tests:/app/tests
+
+  orchestrator:
+    build:
+      context: ./services/orchestrator
+      dockerfile: Dockerfile
+    ports:
+      - "8006:8000"
+    environment:
+      - SERVICE_NAME=orchestrator
+      - DATABASE_URL=postgresql+asyncpg://user:password@postgres:5432/connected_insights
+      - INSIGHTS_SERVICE_URL=http://insights-service:8000
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8000
+      - COMPETITOR_SERVICE_URL=http://competitor-service:8000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - JWT_SECRET=68763CE06A184944B197FB8CA8CC3C8A
+    depends_on:
+      - postgres
+      - insights-service
+    volumes:
+      - ./libs:/app/libs
+      - ./services/orchestrator/src:/app/src
+      - ./services/orchestrator/tests:/app/tests
+
+  mongodb:
+    image: mongo:5.0
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+
+  opensearch:
+    image: opensearchproject/opensearch:2.4.0
+    restart: always
+    environment:
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "bootstrap.memory_lock=true"
+      - "discovery.type=single-node"
+      - "action.auto_create_index=false"
+      - "plugins.security.ssl.http.enabled=false"
+      - "plugins.security.disabled=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+
+  graylog:
+    image: graylog/graylog:5.0
+    restart: always
+    environment:
+      - GRAYLOG_PASSWORD_SECRET=somepasswordsecret
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918 # admin
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/
+      - GRAYLOG_MONGODB_URI=mongodb://mongodb:27017/graylog
+      - GRAYLOG_ELASTICSEARCH_HOSTS=http://opensearch:9200
+    depends_on:
+      - mongodb
+      - opensearch
+    ports:
+      - "9000:9000"
+      - "12201:12201/udp"
+      - "12201:12201/tcp"
+      - "1514:1514/udp"
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+
+  logspout:
+    image: gliderlabs/logspout:v3.2.14
+    restart: always
+    command: syslog://graylog:1514
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - graylog
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=connected_insights
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  opensearch_data:
+  graylog_data:

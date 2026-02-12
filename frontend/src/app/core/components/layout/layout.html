@@ -1,0 +1,57 @@
+<mat-sidenav-container class="h-screen w-full">
+    <mat-sidenav #sidenav mode="side" opened class="w-64 border-r border-gray-200">
+        <div class="p-6 border-b border-gray-200">
+            <h1 class="text-xl font-bold text-indigo-700 flex items-center gap-2">
+                <mat-icon>analytics</mat-icon>
+                Connected Insights
+            </h1>
+        </div>
+
+        <mat-nav-list class="pt-4">
+            <ng-container *ngFor="let item of menuItems">
+                <a mat-list-item *ngIf="!item.role || (item.role === 'ADMIN' && isAdmin)" [routerLink]="item.route"
+                    routerLinkActive="bg-indigo-50 text-indigo-700" class="mb-1 mx-2 rounded-lg">
+                    <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                    <span matListItemTitle>{{ item.label }}</span>
+                </a>
+            </ng-container>
+        </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="bg-gray-50 flex flex-col h-full">
+        <mat-toolbar color="white"
+            class="shadow-sm border-b border-gray-200 px-6 flex justify-between items-center bg-white z-10 relative">
+            <div class="flex items-center gap-4">
+                <button mat-icon-button (click)="sidenav.toggle()">
+                    <mat-icon>menu</mat-icon>
+                </button>
+                <span class="text-lg font-medium text-gray-700">Dashboard</span>
+                <!-- Dynamic title could be better but hardcoded for now or use a service -->
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button mat-icon-button routerLink="/notifications" [matBadge]="unreadCount$ | async"
+                    [matBadgeHidden]="(unreadCount$ | async) === 0" matBadgeColor="warn">
+                    <mat-icon>notifications</mat-icon>
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="userMenu">
+                    <mat-icon>account_circle</mat-icon>
+                </button>
+                <mat-menu #userMenu="matMenu">
+                    <button mat-menu-item>
+                        <mat-icon>person</mat-icon>
+                        <span>Profile</span>
+                    </button>
+                    <button mat-menu-item (click)="logout()">
+                        <mat-icon>logout</mat-icon>
+                        <span>Logout</span>
+                    </button>
+                </mat-menu>
+            </div>
+        </mat-toolbar>
+
+        <div class="p-8 overflow-auto flex-1">
+            <router-outlet></router-outlet>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>
